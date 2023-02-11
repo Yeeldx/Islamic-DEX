@@ -1,1 +1,6 @@
 # Islamic DEX on Binance Smart Chain
+
+# Factory Address: 0xd9145CCE52D386f254917e481eB44e9943F39138
+# Router Address: 0xd8b934580fcE35a11B58C6D73aDeE468a2833fa8
+
+# WBNB: 0xae13d989daC2f0dEbFf460aC112a837C89BAa7cd
