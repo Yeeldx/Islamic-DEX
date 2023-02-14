@@ -10,6 +10,8 @@ import tokenList from "../tokenList.json";
 import axios from "axios";
 import { useSendTransaction, useWaitForTransaction } from "wagmi";
 
+const BASE_URL = "http://localhost:3001"; //"https://api.murabah.com"
+
 function Swap(props) {
   const { address, isConnected } = props;
   const [slippage, setSlippage] = useState(2.5);
@@ -44,7 +46,7 @@ function Swap(props) {
     const inputAmount = e.target.value;
     setTokenOneAmount(inputAmount);
 
-    const res = await axios.get(`https://api.murabah.com/approve/allowance`, {
+    const res = await axios.get(`${BASE_URL}/approve/allowance`, {
       params: { userAddress: address, tokenAddress: tokenOne.address },
     });
 
@@ -99,7 +101,7 @@ function Swap(props) {
   }
 
   async function fetchPrices(one, two) {
-    const res = await axios.get(`https://api.murabah.com/tokenPrice`, {
+    const res = await axios.get(`${BASE_URL}/tokenPrice`, {
       params: { addressOne: one, addressTwo: two },
     });
 
@@ -111,10 +113,10 @@ function Swap(props) {
   }
 
   async function fetchDexSwap() {
-    const res = await axios.get(`https://api.murabah.com/swap`, {
+    const res = await axios.get(`${BASE_URL}/swap`, {
       params: {
-        fromToken: tokenOne.address,
-        toToken: tokenTwo.address,
+        fromToken: tokenOne,
+        toToken: tokenTwo,
         toAddress: address,
         amountIn: tokenOneAmount,
       },
@@ -127,7 +129,7 @@ function Swap(props) {
   }
 
   async function approveToken() {
-    const res = await axios.get(`https://api.murabah.com/approve/transaction`, {
+    const res = await axios.get(`${BASE_URL}/approve/transaction`, {
       params: { tokenAddress: tokenOne.address },
     });
 

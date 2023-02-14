@@ -119,14 +119,17 @@ app.get("/swap", async (req, res) => {
   const fromToken = query.fromToken;
   const toToken = query.toToken;
   const toAddress = query.toAddress;
-
   const amountIn = web3.utils.toWei(query.amountIn, "ether");
 
-  const amountOutMin = await getAmountOutMin(amountIn, fromToken, toToken);
+  const amountOutMin = await getAmountOutMin(
+    amountIn,
+    fromToken.address,
+    toToken.address
+  );
   console.log("amountOutMin: ", amountOutMin);
 
-  const path = [fromToken, toToken];
   const deadline = await calculateDeadline(105400);
+  const path = [fromToken.address, toToken.address];
 
   console.log("input params", [
     amountIn,
@@ -135,19 +138,33 @@ app.get("/swap", async (req, res) => {
     toAddress,
     deadline,
   ]);
-  let tx = await routerContract.methods.swapExactTokensForTokens(
-    amountIn,
-    amountOutMin,
-    path,
-    toAddress,
-    deadline
-  );
+
+  let tx = undefined;
+  let value = 0;
+  if (fromToken.name === "BNB" || toToken.name === "BNB") {
+    tx = await routerContract.methods.swapExactETHForTokens(
+      amountOutMin,
+      path,
+      toAddress,
+      deadline
+    );
+    value = amountIn
+  } else {
+    tx = await routerContract.methods.swapExactTokensForTokens(
+      amountIn,
+      amountOutMin,
+      path,
+      toAddress,
+      deadline
+    );
+  }
 
   const encodedABI = await tx.encodeABI();
   if (encodedABI) {
     return res.status(200).json({
       to: routerAddress,
       data: encodedABI,
+      value: value
     });
   } else {
     return res.status(400).json({ error: "encodeABI error" });

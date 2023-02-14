@@ -1,8 +1,15 @@
 [
     {
+        "ticker": "BNB",
+        "img": "https://pancakeswap.finance/images/chains/97.png",
+        "name": "BNB",
+        "address": "0xae13d989daC2f0dEbFf460aC112a837C89BAa7cd",
+        "decimals": 18
+    },
+    {
         "ticker": "WBNB",
         "img": "https://pancakeswap.finance/images/chains/97.png",
-        "name": "Wrapped Ethereum",
+        "name": "Wrapped BNB",
         "address": "0xae13d989daC2f0dEbFf460aC112a837C89BAa7cd",
         "decimals": 18
     },
