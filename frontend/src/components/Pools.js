@@ -3,6 +3,7 @@ import { Input, Popover, Radio, Modal, message } from 'antd';
 import{
     ArrowDownOutlined,
     DownOutlined,
+    PlusOutlined,
     SettingOutlined
 } from '@ant-design/icons';
 
@@ -19,9 +20,9 @@ function Pools(props){
     const {tokenOne,settokenOne} = useState(tokenList[0]);
     const {changeToken,setChangeToken} = useState();
     const {isOpen,setIsOpen} = useState(false);
-    function handleSlippagechange(e){
+    function handleSlippageChange(e) {
         setSlippage(e.target.value);
-    }
+      }
     function changeAmount(e) {
         setTokenOneAmount(e.target.value);
         if(e.target.value && prices){
@@ -36,17 +37,17 @@ function Pools(props){
 
     // }
     const settings = (
-    <>
-        <div>Sliggage Tolerance</div>
-        <div>
-            <Radio.Group value={slippage} onChange = {handleSlippagechange}>
-                <Radio.Button value={0.5}>0.5%</Radio.Button>
-                <Radio.Button value={2.5}>2.5%</Radio.Button>
-                <Radio.Button value={5}>5.0%</Radio.Button>
+        <>
+          <div>Slippage Tolerance</div>
+          <div>
+            <Radio.Group value={slippage} onChange={handleSlippageChange}>
+              <Radio.Button value={0.5}>0.5%</Radio.Button>
+              <Radio.Button value={2.5}>2.5%</Radio.Button>
+              <Radio.Button value={5}>5.0%</Radio.Button>
             </Radio.Group>
-        </div>
-    </>
-    )
+          </div>
+        </>
+      );
 
 
     return(
@@ -58,20 +59,19 @@ function Pools(props){
                 <SettingOutlined className="cog" />
                 </Popover>
             </div>
-            <div>
+            <div className="inputs">
                 <Input placeholder="0" value={tokenOneAmount} onChange ={changeAmount} disabled = {!prices} />
+            </div><br/>
+            <div className="plusSign">
+            <PlusOutlined />
+            </div><br/>
+            <div className="inputs">
                 <Input placeholder="0" value={tokenTwoAmount} disabled = {true} />
                 
             </div>
-            {/* <div>
-            <ArrowDownOutlined className="switchArrow" />
-            </div>
-            <div className="assetOne"  onClick={() => openModal(1)}>
-            <img src={tokenOne.img} alt="assetOneLogo" className="assetLogo" />
-            {tokenOne.ticker}
-            <DownOutlined />
-          </div> */}
-            <div>
+            
+            
+            <div className="poolsDetails">
             <Input value="1 DAI = 0.756 WMATIC      1 WMATIC = 1.32 DAI Your pool shared:0.071862% LP Tokens Received:0 LP Tokens" />
 
             </div>
