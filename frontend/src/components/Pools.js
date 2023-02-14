@@ -16,6 +16,9 @@ function Pools(props){
     const {tokenOneAmount,setTokenOneAmount} = useState(null);
     const {tokenTwoAmount,setTokenTwoAmount} = useState(null);
     const {prices,setPrices} = useState(null);
+    const {tokenOne,settokenOne} = useState(tokenList[0]);
+    const {changeToken,setChangeToken} = useState();
+    const {isOpen,setIsOpen} = useState(false);
     function handleSlippagechange(e){
         setSlippage(e.target.value);
     }
@@ -27,6 +30,11 @@ function Pools(props){
             setTokenTwoAmount(null);
         }
     }
+    // function openModal(asset){
+        // setChangeToken(asset);
+        // setIsOpen(true);
+
+    // }
     const settings = (
     <>
         <div>Sliggage Tolerance</div>
@@ -55,6 +63,14 @@ function Pools(props){
                 <Input placeholder="0" value={tokenTwoAmount} disabled = {true} />
                 
             </div>
+            {/* <div>
+            <ArrowDownOutlined className="switchArrow" />
+            </div>
+            <div className="assetOne"  onClick={() => openModal(1)}>
+            <img src={tokenOne.img} alt="assetOneLogo" className="assetLogo" />
+            {tokenOne.ticker}
+            <DownOutlined />
+          </div> */}
             <div>
             <Input value="1 DAI = 0.756 WMATIC      1 WMATIC = 1.32 DAI Your pool shared:0.071862% LP Tokens Received:0 LP Tokens" />
 
