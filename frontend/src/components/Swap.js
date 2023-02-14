@@ -44,7 +44,7 @@ function Swap(props) {
     const inputAmount = e.target.value;
     setTokenOneAmount(inputAmount);
 
-    const res = await axios.get(`http://165.22.208.114/approve/allowance`, {
+    const res = await axios.get(`https://api.murabah.com/approve/allowance`, {
       params: { userAddress: address, tokenAddress: tokenOne.address },
     });
 
@@ -99,7 +99,7 @@ function Swap(props) {
   }
 
   async function fetchPrices(one, two) {
-    const res = await axios.get(`http://165.22.208.114/tokenPrice`, {
+    const res = await axios.get(`https://api.murabah.com/tokenPrice`, {
       params: { addressOne: one, addressTwo: two },
     });
 
@@ -111,7 +111,7 @@ function Swap(props) {
   }
 
   async function fetchDexSwap() {
-    const res = await axios.get(`http://165.22.208.114/swap`, {
+    const res = await axios.get(`https://api.murabah.com/swap`, {
       params: {
         fromToken: tokenOne.address,
         toToken: tokenTwo.address,
@@ -127,7 +127,7 @@ function Swap(props) {
   }
 
   async function approveToken() {
-    const res = await axios.get(`http://165.22.208.114/approve/transaction`, {
+    const res = await axios.get(`https://api.murabah.com/approve/transaction`, {
       params: { tokenAddress: tokenOne.address },
     });
 
