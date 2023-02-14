@@ -19,8 +19,8 @@ function Header(props) {
       </div>
       <div className="rightH">
         <div className="headerItem">
-          <img src={Eth} alt="eth" className="eth" />
-          Ethereum
+          <img src="https://pancakeswap.finance/images/chains/97.png" alt="eth" className="eth" />
+          BSC Testnet
         </div>
         <div className="connectButton" onClick={connect}>
           {isConnected
