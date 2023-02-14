@@ -11,7 +11,7 @@ import axios from "axios";
 import { useSendTransaction, useWaitForTransaction } from "wagmi";
 
 function Swap(props) {
-  const { address, isConnected} = props;
+  const { address, isConnected } = props;
   const [slippage, setSlippage] = useState(2.5);
   const [tokenOneAmount, setTokenOneAmount] = useState(null);
   const [tokenTwoAmount, setTokenTwoAmount] = useState(null);
@@ -23,17 +23,17 @@ function Swap(props) {
   const [txDetails, setTxDetails] = useState({
     to: null,
     data: null,
-    value: null,
+    value: 0,
   });
 
-  const { data, sendTransction} = useSendTransaction({
+  const { data, sendTransaction } = useSendTransaction({
     request: {
       from: address,
       to: String(txDetails.to),
       data: String(txDetails.data),
-      value: String(txDetails.value)
-    }
-  })
+      value: txDetails.value,
+    },
+  });
 
   function handleSlippageChange(e) {
     setSlippage(e.target.value);
@@ -42,7 +42,7 @@ function Swap(props) {
   function changeAmount(e) {
     setTokenOneAmount(e.target.value);
     if (e.target.value && prices) {
-      setTokenTwoAmount((e.target.value * prices.ratio).toFixed(2));
+      setTokenTwoAmount((e.target.value * prices.ratio).toFixed(10));
     } else {
       setTokenTwoAmount(null);
     }
@@ -86,29 +86,38 @@ function Swap(props) {
       params: { addressOne: one, addressTwo: two },
     });
 
-    setPrices(res.data);
+    if(res.data.ratio === 0){
+      setPrices(null)
+    }else{
+      setPrices(res.data);
+    }
   }
 
   async function fetchDexSwap() {
-    var txDeta = {
-      to: 1001,
-      value: 65667,
-      data: 0x1231231
-    };
-  
-    setTxDetails(txDeta);
+    const res = await axios.get(`http://localhost:3001/swap`, {
+      params: {
+        fromToken: tokenOne.address,
+        toToken: tokenTwo.address,
+        toAddress: address,
+        amountIn: tokenOneAmount,
+      },
+    });
 
+    if (res.status === 200) {
+      console.log("encodeABI: ",  res.data)
+      setTxDetails(res.data);
+    }
   }
 
   useEffect(() => {
     fetchPrices(tokenList[0].address, tokenList[1].address);
   }, []);
 
-  useEffect(() =>{
-    if(txDetails.to && isConnected){
-      sendTransction();
+  useEffect(() => {
+    if (txDetails.to && isConnected) {
+      sendTransaction();
     }
-  }, [txDetails])
+  }, [txDetails]);
 
   const settings = (
     <>
