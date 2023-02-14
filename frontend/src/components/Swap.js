@@ -9,8 +9,9 @@ import {
 import tokenList from "../tokenList.json";
 import axios from "axios";
 import { useSendTransaction, useWaitForTransaction } from "wagmi";
+import env from "react-dotenv";
 
-const BASE_URL = "https://api.murabah.com"; //"http://localhost:3001"
+const BASE_URL = env.BASE_URL;
 
 function Swap(props) {
   const { address, isConnected } = props;
