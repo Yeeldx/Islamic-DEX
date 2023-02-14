@@ -21,12 +21,11 @@ jobs:
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
         
     steps:
-    - uses: actions/checkout@v3
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v3
-      with:
-        node-version: ${{ matrix.node-version }}
-        cache: 'npm'
-    - run: npm install
-    - run: pm2 delete all
-    - run: pm2 start node index.js
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Build project
+        working-directory: backend
+        run: |
+          npm install
+          pm2 delete all
+          pm2 start node index.js
