@@ -19,11 +19,12 @@ jobs:
         
     steps:
     - uses: actions/checkout@v3
+    - run: cd backend
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v3
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
-    - run: cd backend && npm install
+    - run: npm install
     - run: pm2 delete all
     - run: pm2 start node index.js
