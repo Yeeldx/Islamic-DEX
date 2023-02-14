@@ -137,7 +137,7 @@ app.get("/swap", async (req, res) => {
   ]);
   let tx = await routerContract.methods.swapExactTokensForTokens(
     amountIn,
-    amountOutMin - 1000,
+    amountOutMin,
     path,
     toAddress,
     deadline
