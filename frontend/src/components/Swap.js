@@ -10,7 +10,7 @@ import tokenList from "../tokenList.json";
 import axios from "axios";
 import { useSendTransaction, useWaitForTransaction } from "wagmi";
 
-const BASE_URL = "http://localhost:3001"; //"https://api.murabah.com"
+const BASE_URL = "https://api.murabah.com"; //"http://localhost:3001"
 
 function Swap(props) {
   const { address, isConnected } = props;
