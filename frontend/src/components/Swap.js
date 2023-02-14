@@ -18,6 +18,7 @@ function Swap(props) {
   const [tokenOne, setTokenOne] = useState(tokenList[0]);
   const [tokenTwo, setTokenTwo] = useState(tokenList[1]);
   const [isOpen, setIsOpen] = useState(false);
+  const [requireApproval, setRequireApproval] = useState(false);
   const [changeToken, setChangeToken] = useState();
   const [prices, setPrices] = useState(null);
   const [txDetails, setTxDetails] = useState({
@@ -39,8 +40,24 @@ function Swap(props) {
     setSlippage(e.target.value);
   }
 
-  function changeAmount(e) {
-    setTokenOneAmount(e.target.value);
+  async function changeAmount(e) {
+    const inputAmount = e.target.value;
+    setTokenOneAmount(inputAmount);
+
+    const res = await axios.get(`http://localhost:3001/approve/allowance`, {
+      params: { userAddress: address, tokenAddress: tokenOne.address },
+    });
+
+    if (res.status === 200) {
+      console.log("allowance: ", res.data.allowance);
+      console.log("input amount: ", inputAmount * 10 ** 18);
+      if (inputAmount * 10 ** 18 > res.data.allowance) {
+        setRequireApproval(true);
+      } else {
+        setRequireApproval(false);
+      }
+    }
+
     if (e.target.value && prices) {
       setTokenTwoAmount((e.target.value * prices.ratio).toFixed(10));
     } else {
@@ -86,9 +103,9 @@ function Swap(props) {
       params: { addressOne: one, addressTwo: two },
     });
 
-    if(res.data.ratio === 0){
-      setPrices(null)
-    }else{
+    if (res.data.ratio === 0) {
+      setPrices(null);
+    } else {
       setPrices(res.data);
     }
   }
@@ -104,7 +121,17 @@ function Swap(props) {
     });
 
     if (res.status === 200) {
-      console.log("encodeABI: ",  res.data)
+      console.log("encodeABI: ", res.data);
+      setTxDetails(res.data);
+    }
+  }
+
+  async function approveToken() {
+    const res = await axios.get(`http://localhost:3001/approve/transaction`, {
+      params: { tokenAddress: tokenOne.address },
+    });
+
+    if (res.status === 200) {
       setTxDetails(res.data);
     }
   }
@@ -192,13 +219,23 @@ function Swap(props) {
             <DownOutlined />
           </div>
         </div>
-        <div
-          className="swapButton"
-          onClick={fetchDexSwap}
-          disabled={!tokenOneAmount || !isConnected}
-        >
-          Swap
-        </div>
+        {requireApproval ? (
+          <div
+            className="swapButton"
+            style={{ backgroundColor: "#64dd17", color: "white" }}
+            onClick={approveToken}
+          >
+            Approve
+          </div>
+        ) : (
+          <div
+            className="swapButton"
+            onClick={fetchDexSwap}
+            disabled={!tokenOneAmount || !isConnected}
+          >
+            Swap
+          </div>
+        )}
       </div>
     </>
   );

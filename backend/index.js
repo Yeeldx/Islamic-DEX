@@ -21,6 +21,9 @@ const routerContract = new web3.eth.Contract(routerAbi, routerAddress);
 
 const chain = EvmChain.BSC_TESTNET;
 
+const maxUint256 =
+  115792089237316195423570985008687907853269984665640564039457584007913129639935n;
+
 app.use(cors());
 app.use(express.json());
 
@@ -35,7 +38,7 @@ app.get("/tokenPrice", async (req, res) => {
   const tokenA = query.addressOne;
   const tokenB = query.addressTwo;
 
-  const amountIn = '1000000000000000000';//web3.utils.toWei(web3.utils.toBN(query.amount?query.amount:0), 'ether');
+  const amountIn = "1000000000000000000"; //web3.utils.toWei(web3.utils.toBN(query.amount?query.amount:0), 'ether');
   const amountOutMin = await getAmountOutMin(amountIn, tokenA, tokenB);
 
   /*try {
@@ -60,7 +63,7 @@ app.get("/tokenPrice", async (req, res) => {
   const usdPrices = {
     tokenOne: 1,
     tokenTwo: 1,
-    ratio: amountOutMin/amountIn,
+    ratio: amountOutMin / amountIn,
   };
 
   return res.status(200).json(usdPrices);
@@ -69,44 +72,42 @@ app.get("/tokenPrice", async (req, res) => {
 /**
  * Get the number of tokens that the Murabah router is allowed to spend
  */
-app.get("/approve/allowance", (req, res) => {
+app.get("/approve/allowance", async (req, res) => {
   const { query } = req;
 
   const contractAddress = query.tokenAddress;
   const tokenContract = new web3.eth.Contract(tokenAbi, contractAddress);
 
-  tokenContract.methods.allowance(to, value).then((error, allowance) => {
-    if (error) {
-      return res.status(400).json({ error: error.message });
-    } else {
-      return res.status(200).json({ allowance: allowance });
-    }
-  });
+  const allowance = await tokenContract.methods
+    .allowance(query.userAddress, routerAddress)
+    .call();
+  if (allowance) {
+    return res.status(200).json({ allowance: allowance });
+  } else {
+    return res.status(400).json({ error: error.message });
+  }
 });
 
 /**
  * Generate data for calling the token contract in order to allow the Murabah router for spend funds
  */
-app.get("/approve/transaction", (req, res) => {
+app.get("/approve/transaction", async (req, res) => {
   const { query } = req;
 
   const contractAddress = query.tokenAddress;
   const tokenContract = new web3.eth.Contract(tokenAbi, contractAddress);
 
-  const amount = query.amount;
+  const tx = await tokenContract.methods.approve(routerAddress, maxUint256);
+  const encodedABI = await tx.encodeABI();
 
-  tokenContract.methods
-    .approve(routerAddress, amount)
-    .encodeABI((error, encodedABI) => {
-      if (error) {
-        res.send({ error: error.message });
-      } else {
-        res.send({
-          to: contractAddress,
-          data: encodedABI,
-        });
-      }
+  if (encodedABI) {
+    return res.status(200).json({
+      to: query.tokenAddress,
+      data: encodedABI,
     });
+  } else {
+    return res.status(400).json({ error: "encodeABI error" });
+  }
 });
 
 /**
@@ -119,13 +120,13 @@ app.get("/swap", async (req, res) => {
   const toToken = query.toToken;
   const toAddress = query.toAddress;
 
-  const amountIn = web3.utils.toWei(query.amountIn, 'ether');
-  
+  const amountIn = web3.utils.toWei(query.amountIn, "ether");
+
   const amountOutMin = await getAmountOutMin(amountIn, fromToken, toToken);
-  console.log("amountOutMin: ", amountOutMin)
+  console.log("amountOutMin: ", amountOutMin);
 
   const path = [fromToken, toToken];
-  const deadline = await calculateDeadline(7200);
+  const deadline = await calculateDeadline(105400);
 
   console.log("input params", [
     amountIn,
@@ -162,7 +163,8 @@ async function getAmountOutMin(tokenAmount, fromToken, toToken) {
 }
 
 async function calculateDeadline(deadline) {
-  const block = await web3.eth.getBlock("latest");
+  let block = await web3.eth.getBlock("latest");
+  console.log("block latest: ", block.timestamp);
   return block.timestamp + deadline;
 }
 
