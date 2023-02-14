@@ -23,9 +23,15 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
+      - name: create env file
+        working-directory: backend
+        run: |
+          touch .env
+          echo MORALIS_KEY=${{ secrets.MORALIS_KEY }} >> .env
+          echo RPC_URL=${{ secrets.RPC_URL }} >> .env
       - name: Build project
         working-directory: backend
         run: |
           npm install
           pm2 delete all
-          pm2 start node index.js
+          pm2 restart backendAPI
