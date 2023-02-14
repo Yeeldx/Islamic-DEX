@@ -44,7 +44,7 @@ function Swap(props) {
     const inputAmount = e.target.value;
     setTokenOneAmount(inputAmount);
 
-    const res = await axios.get(`http://localhost:3001/approve/allowance`, {
+    const res = await axios.get(`http://165.22.208.114/approve/allowance`, {
       params: { userAddress: address, tokenAddress: tokenOne.address },
     });
 
@@ -99,7 +99,7 @@ function Swap(props) {
   }
 
   async function fetchPrices(one, two) {
-    const res = await axios.get(`http://localhost:3001/tokenPrice`, {
+    const res = await axios.get(`http://165.22.208.114/tokenPrice`, {
       params: { addressOne: one, addressTwo: two },
     });
 
@@ -111,7 +111,7 @@ function Swap(props) {
   }
 
   async function fetchDexSwap() {
-    const res = await axios.get(`http://localhost:3001/swap`, {
+    const res = await axios.get(`http://165.22.208.114/swap`, {
       params: {
         fromToken: tokenOne.address,
         toToken: tokenTwo.address,
@@ -127,7 +127,7 @@ function Swap(props) {
   }
 
   async function approveToken() {
-    const res = await axios.get(`http://localhost:3001/approve/transaction`, {
+    const res = await axios.get(`http://165.22.208.114/approve/transaction`, {
       params: { tokenAddress: tokenOne.address },
     });
 
