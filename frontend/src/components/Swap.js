@@ -9,40 +9,60 @@ import {
 import tokenList from "../tokenList.json";
 import axios from "axios";
 import { useSendTransaction, useWaitForTransaction } from "wagmi";
+import env from "react-dotenv";
+
+const BASE_URL = env.BASE_URL;
 
 function Swap(props) {
-  const { address, isConnected} = props;
+  const { address, isConnected } = props;
   const [slippage, setSlippage] = useState(2.5);
   const [tokenOneAmount, setTokenOneAmount] = useState(null);
   const [tokenTwoAmount, setTokenTwoAmount] = useState(null);
   const [tokenOne, setTokenOne] = useState(tokenList[0]);
   const [tokenTwo, setTokenTwo] = useState(tokenList[1]);
   const [isOpen, setIsOpen] = useState(false);
+  const [requireApproval, setRequireApproval] = useState(false);
   const [changeToken, setChangeToken] = useState();
   const [prices, setPrices] = useState(null);
   const [txDetails, setTxDetails] = useState({
     to: null,
     data: null,
-    value: null,
+    value: 0,
   });
 
-  const { data, sendTransction} = useSendTransaction({
+  const { data, sendTransaction } = useSendTransaction({
     request: {
       from: address,
       to: String(txDetails.to),
       data: String(txDetails.data),
-      value: String(txDetails.value)
-    }
-  })
+      value: txDetails.value,
+    },
+  });
 
   function handleSlippageChange(e) {
     setSlippage(e.target.value);
   }
 
-  function changeAmount(e) {
-    setTokenOneAmount(e.target.value);
+  async function changeAmount(e) {
+    const inputAmount = e.target.value;
+    setTokenOneAmount(inputAmount);
+
+    const res = await axios.get(`${BASE_URL}/approve/allowance`, {
+      params: { userAddress: address, tokenAddress: tokenOne.address },
+    });
+
+    if (res.status === 200) {
+      console.log("allowance: ", res.data.allowance);
+      console.log("input amount: ", inputAmount * 10 ** 18);
+      if (inputAmount * 10 ** 18 > res.data.allowance) {
+        setRequireApproval(true);
+      } else {
+        setRequireApproval(false);
+      }
+    }
+
     if (e.target.value && prices) {
-      setTokenTwoAmount((e.target.value * prices.ratio).toFixed(2));
+      setTokenTwoAmount((e.target.value * prices.ratio).toFixed(10));
     } else {
       setTokenTwoAmount(null);
     }
@@ -82,33 +102,52 @@ function Swap(props) {
   }
 
   async function fetchPrices(one, two) {
-    const res = await axios.get(`http://localhost:3001/tokenPrice`, {
+    const res = await axios.get(`${BASE_URL}/tokenPrice`, {
       params: { addressOne: one, addressTwo: two },
     });
 
-    setPrices(res.data);
+    if (res.data.ratio === 0) {
+      setPrices(null);
+    } else {
+      setPrices(res.data);
+    }
   }
 
   async function fetchDexSwap() {
-    var txDeta = {
-      to: 1001,
-      value: 65667,
-      data: 0x1231231
-    };
-  
-    setTxDetails(txDeta);
+    const res = await axios.get(`${BASE_URL}/swap`, {
+      params: {
+        fromToken: tokenOne,
+        toToken: tokenTwo,
+        toAddress: address,
+        amountIn: tokenOneAmount,
+      },
+    });
 
+    if (res.status === 200) {
+      console.log("encodeABI: ", res.data);
+      setTxDetails(res.data);
+    }
+  }
+
+  async function approveToken() {
+    const res = await axios.get(`${BASE_URL}/approve/transaction`, {
+      params: { tokenAddress: tokenOne.address },
+    });
+
+    if (res.status === 200) {
+      setTxDetails(res.data);
+    }
   }
 
   useEffect(() => {
     fetchPrices(tokenList[0].address, tokenList[1].address);
   }, []);
 
-  useEffect(() =>{
-    if(txDetails.to && isConnected){
-      sendTransction();
+  useEffect(() => {
+    if (txDetails.to && isConnected) {
+      sendTransaction();
     }
-  }, [txDetails])
+  }, [txDetails]);
 
   const settings = (
     <>
@@ -183,13 +222,23 @@ function Swap(props) {
             <DownOutlined />
           </div>
         </div>
-        <div
-          className="swapButton"
-          onClick={fetchDexSwap}
-          disabled={!tokenOneAmount || !isConnected}
-        >
-          Swap
-        </div>
+        {requireApproval ? (
+          <div
+            className="swapButton"
+            style={{ backgroundColor: "#64dd17", color: "white" }}
+            onClick={approveToken}
+          >
+            Approve
+          </div>
+        ) : (
+          <div
+            className="swapButton"
+            onClick={fetchDexSwap}
+            disabled={!tokenOneAmount || !isConnected}
+          >
+            Swap
+          </div>
+        )}
       </div>
     </>
   );
