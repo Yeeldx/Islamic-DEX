@@ -39,6 +39,9 @@ function Swap(props) {
     },
   });
 
+  console.log("Swap tokenOne: ", tokenOne);
+
+
   function handleSlippageChange(e) {
     setSlippage(e.target.value);
   }

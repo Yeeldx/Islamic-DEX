@@ -128,6 +128,23 @@
   transition: 0.3s
 }
 
+.plusSign{
+  background-color: #3a4157;
+  width: 25px;
+  height: 25px;
+  align-items: center;
+  justify-content: center;
+  display: flex;
+  border-radius: 8px;
+  position: absolute;
+  top: 86px;
+  left: 180px;
+  margin: auto;
+  width: 5%;
+  border: 3px ;
+  padding: 10px;
+}
+
 .dollarAmount {
   position: absolute;
   top: 75px;
@@ -268,18 +285,3 @@
   font-size: 10px;
 
 } 
-.plusSign{
-  background-color: #3a4157;
-  width: 25px;
-  height: 25px;
-  align-items: center;
-  justify-content: center;
-  display: flex;
-  border-radius: 8px;
-  margin: auto;
-  width: 5%;
-  border: 3px ;
-  padding: 10px;
-  
-
-}
