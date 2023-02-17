@@ -1,44 +1,37 @@
 [
     {
-        "ticker": "USDC",
-        "img": "https://cdn.moralis.io/eth/0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48.png",
-        "name": "USD Coin",
-        "address": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
-        "decimals": 6
+        "ticker": "BNB",
+        "img": "https://pancakeswap.finance/images/chains/97.png",
+        "name": "BNB",
+        "address": "0xae13d989daC2f0dEbFf460aC112a837C89BAa7cd",
+        "decimals": 18
     },
     {
-        "ticker": "LINK",
-        "img": "https://cdn.moralis.io/eth/0x514910771af9ca656af840dff83e8264ecf986ca.png",
-        "name": "Chainlink",
-        "address": "0x514910771af9ca656af840dff83e8264ecf986ca",
+        "ticker": "WBNB",
+        "img": "https://pancakeswap.finance/images/chains/97.png",
+        "name": "Wrapped BNB",
+        "address": "0xae13d989daC2f0dEbFf460aC112a837C89BAa7cd",
+        "decimals": 18
+    },
+    {
+        "ticker": "MRB",
+        "img": "https://tokens.pancakeswap.finance/images/0x1D2F0da169ceB9fC7B3144628dB156f3F6c60dBE.png",
+        "name": "MURABAH",
+        "address": "0xAcFD8930700605a1A3904aEa675d9F7068b5f2C9",
         "decimals": 18
     },
     {
         "ticker": "USDT",
         "img": "https://cdn.moralis.io/eth/0xdac17f958d2ee523a2206206994597c13d831ec7.png",
         "name": "Tether USD",
-        "address": "0xdac17f958d2ee523a2206206994597c13d831ec7",
+        "address": "0x7ef95a0FEE0Dd31b22626fA2e10Ee6A223F8a684",
         "decimals": 6
-    },
-    {
-        "ticker": "GUSD",
-        "img": "https://cdn.moralis.io/eth/0x056fd409e1d7a124bd7017459dfea2f387b6d5cd.png",
-        "name": "Gemini USD",
-        "address": "0x056Fd409E1d7A124BD7017459dFEa2F387b6d5Cd",
-        "decimals": 2
     },
     {
         "ticker": "DAI",
         "img": "https://cdn.moralis.io/eth/0x6b175474e89094c44da98b954eedeac495271d0f.png",
         "name": "Dai Stablecoin",
-        "address": "0x6b175474e89094c44da98b954eedeac495271d0f",
-        "decimals": 18
-    },
-    {
-        "ticker": "WETH",
-        "img": "https://cdn.moralis.io/eth/0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2.png",
-        "name": "Wrapped Ethereum",
-        "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+        "address": "0xEC5dCb5Dbf4B114C9d0F65BcCAb49EC54F6A0867",
         "decimals": 18
     },
     {
@@ -89,7 +82,12 @@
         "name": "AAVE",
         "address": "0x7Fc66500c84A76Ad7e9c93437bFc5Ac33E2DDaE9",
         "decimals": 18
+    },
+    {
+        "ticker": "USDC",
+        "img": "https://cdn.moralis.io/eth/0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48.png",
+        "name": "USD Coin",
+        "address": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+        "decimals": 6
     }
-
-
 ]

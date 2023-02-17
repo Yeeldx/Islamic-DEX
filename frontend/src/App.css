@@ -2,7 +2,7 @@
   text-align: center;
 }
 
-header {
+.header {
   height: 100px;
   display: flex;
   justify-content: space-between;
@@ -12,8 +12,6 @@ header {
 }
 
 .logo{
-  width: 40px;
-  height: 40px;
   padding-right: 20px;
 }
 
@@ -54,12 +52,12 @@ header {
 }
 
 .connectButton {
-  background-color: #243056; 
+  background-color: #456d7c; 
   padding: 10px;
   padding-right: 20px;
   padding-left: 20px;
   border-radius: 100px;
-  color: #5981F3;
+  color: #7cb8bf;
   font-weight: bold;
   transition: 0.3s;
 }
