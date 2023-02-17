@@ -17,7 +17,8 @@ function Pools(props){
     const {tokenOneAmount,setTokenOneAmount} = useState(null);
     const {tokenTwoAmount,setTokenTwoAmount} = useState(null);
     const {prices,setPrices} = useState(null);
-    const {tokenOne,settokenOne} = useState(tokenList[0]);
+    const {tokenOne,setTokenOne} = useState(tokenList[0]);
+    const {tokenTwo,setTokenTwo} = useState(tokenList[1]);
     const {changeToken,setChangeToken} = useState();
     const {isOpen,setIsOpen} = useState(false);
     function handleSlippageChange(e) {
@@ -31,11 +32,32 @@ function Pools(props){
             setTokenTwoAmount(null);
         }
     }
-    // function openModal(asset){
-        // setChangeToken(asset);
-        // setIsOpen(true);
+    function openModal(asset){
+         setChangeToken(asset);
+         setIsOpen(true);
 
-    // }
+    }
+    function modifyToken(i){
+        setPrices(null);
+        setTokenOneAmount(null);
+        setTokenTwoAmount(null);
+        if(changeToken === 1){
+            setTokenOne(tokenList[i]);
+            fetchPrices(tokenOne[i].address,tokenTwo.address);
+        }else{
+            setTokenTwo(tokenList[i]);
+            fetchPrices(tokenOne.address,tokenList[i].address);
+        }
+        setIsOpen(false);
+
+        }
+        async function fetchPrices(one, two) {
+            const res = await axios.get(`http://localhost:3001/tokenPrice`, {
+              params: { addressOne: one, addressTwo: two },
+            });
+        }
+        
+    
     const settings = (
         <>
           <div>Slippage Tolerance</div>
@@ -52,6 +74,21 @@ function Pools(props){
 
     return(
         <>
+        <Modal open= {isOpen} footer= {null} onCancel={() => setIsOpen(false)} title="select a token" >
+        <div className='modelContent'>
+            {tokenList?.map((e,i) => {
+                return(
+                    <div className='tokenChoice' key={i} onClick ={() =>modifyToken(i)}>
+                        <img src={e.img} alt={e.ticker} className = "tokenLogo" />
+                        <div className='tokenChoiceNames'>
+                            <div className='tokenName'>{e.name}</div>
+                            <div className='tokenTicker'>{e.ticker}</div>
+                            </div>
+                    </div>
+                );
+            })}
+        </div>
+        </Modal>
         <div className="tradeBox">
             <div className="tradeBoxHeader">
                 <h4>Pools</h4>
@@ -68,6 +105,17 @@ function Pools(props){
             <div className="inputs">
                 <Input placeholder="0" value={tokenTwoAmount} disabled = {true} />
                 
+            </div>
+            <div className='assetOne' onClick={() => openModal(1)}>
+                <img src={tokenOne?.img} alt="assetOneLogo" className='assetLogo'/>
+                {tokenOne.ticker}
+                <DownOutlined></DownOutlined>
+
+            </div>
+            <div className='assetTwo' onClick={() => openModal(2)}>
+                <img src={tokenTwo?.img } alt="assetTwologo" className='assetLogo' />
+                {tokenTwo.ticker}
+                <DownOutlined></DownOutlined>
             </div>
             
             
