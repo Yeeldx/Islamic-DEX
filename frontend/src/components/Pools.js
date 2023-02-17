@@ -3,6 +3,7 @@ import { Input, Popover, Radio, Modal, message } from "antd";
 import {
   ArrowDownOutlined,
   DownOutlined,
+  PlusOutlined,
   SettingOutlined,
 } from "@ant-design/icons";
 
@@ -13,7 +14,7 @@ import env from "react-dotenv";
 
 const BASE_URL = env.BASE_URL;
 
-function Swap(props) {
+function Pools(props) {
   const { address, isConnected } = props;
   const [slippage, setSlippage] = useState(2.5);
   const [tokenOneAmount, setTokenOneAmount] = useState(null);
@@ -21,136 +22,44 @@ function Swap(props) {
   const [tokenOne, setTokenOne] = useState(tokenList[0]);
   const [tokenTwo, setTokenTwo] = useState(tokenList[1]);
   const [isOpen, setIsOpen] = useState(false);
-  const [requireApproval, setRequireApproval] = useState(false);
   const [changeToken, setChangeToken] = useState();
   const [prices, setPrices] = useState(null);
-  const [txDetails, setTxDetails] = useState({
-    to: null,
-    data: null,
-    value: 0,
-  });
 
-  const { data, sendTransaction } = useSendTransaction({
-    request: {
-      from: address,
-      to: String(txDetails.to),
-      data: String(txDetails.data),
-      value: txDetails.value,
-    },
-  });
-
-  console.log("Swap tokenOne: ", tokenOne);
-
+  console.log("Pools tokenOne: ", tokenOne);
 
   function handleSlippageChange(e) {
     setSlippage(e.target.value);
   }
-
-  async function changeAmount(e) {
-    const inputAmount = e.target.value;
-    setTokenOneAmount(inputAmount);
-
-    const res = await axios.get(`${BASE_URL}/approve/allowance`, {
-      params: { userAddress: address, tokenAddress: tokenOne.address },
-    });
-
-    if (res.status === 200) {
-      console.log("allowance: ", res.data.allowance);
-      console.log("input amount: ", inputAmount * 10 ** 18);
-      if (inputAmount * 10 ** 18 > res.data.allowance) {
-        setRequireApproval(true);
-      } else {
-        setRequireApproval(false);
-      }
-    }
-
+  function changeAmount(e) {
+    setTokenOneAmount(e.target.value);
     if (e.target.value && prices) {
-      setTokenTwoAmount((e.target.value * prices.ratio).toFixed(10));
+      setTokenTwoAmount((e.target.value * prices.ration).toFixed(2));
     } else {
       setTokenTwoAmount(null);
     }
   }
-
-  function switchTokens() {
-    setPrices(null);
-    setTokenOneAmount(null);
-    setTokenTwoAmount(null);
-
-    const one = tokenOne;
-    const two = tokenTwo;
-
-    setTokenOne(two);
-    setTokenTwo(one);
-    fetchPrices(two.address, one.address);
-  }
-
   function openModal(asset) {
     setChangeToken(asset);
     setIsOpen(true);
   }
-
   function modifyToken(i) {
     setPrices(null);
     setTokenOneAmount(null);
     setTokenTwoAmount(null);
-
     if (changeToken === 1) {
       setTokenOne(tokenList[i]);
-      fetchPrices(tokenList[i].address, tokenTwo.address);
+      fetchPrices(tokenOne[i].address, tokenTwo.address);
     } else {
       setTokenTwo(tokenList[i]);
       fetchPrices(tokenOne.address, tokenList[i].address);
     }
     setIsOpen(false);
   }
-
   async function fetchPrices(one, two) {
     const res = await axios.get(`${BASE_URL}/tokenPrice`, {
       params: { addressOne: one, addressTwo: two },
     });
-
-    if (res.data.ratio === 0) {
-      setPrices(null);
-    } else {
-      setPrices(res.data);
-    }
   }
-
-  async function fetchDexSwap() {
-    const res = await axios.get(`${BASE_URL}/swap`, {
-      params: {
-        fromToken: tokenOne,
-        toToken: tokenTwo,
-        toAddress: address,
-        amountIn: tokenOneAmount,
-      },
-    });
-
-    if (res.status === 200) {
-      console.log("encodeABI: ", res.data);
-      setTxDetails(res.data);
-    }
-  }
-
-  async function approveToken() {
-    const res = await axios.get(`${BASE_URL}/approve/transaction`, {
-      params: { tokenAddress: tokenOne.address },
-    });
-
-    if (res.status === 200) {
-      setTxDetails(res.data);
-    }
-  }
-
-  useEffect(() => {
-    fetchPrices(tokenList[0].address, tokenList[1].address);
-  }, []);
-
-  useEffect(() => {
-    if (txDetails.to && isConnected) {
-      sendTransaction();
-    }
-  }, [txDetails]);
 
   const settings = (
     <>
@@ -171,9 +80,9 @@ function Swap(props) {
         open={isOpen}
         footer={null}
         onCancel={() => setIsOpen(false)}
-        title="Select a token"
+        title="select a token"
       >
-        <div className="modalContent">
+        <div className="modelContent">
           {tokenList?.map((e, i) => {
             return (
               <div
@@ -193,12 +102,12 @@ function Swap(props) {
       </Modal>
       <div className="tradeBox">
         <div className="tradeBoxHeader">
-          <h4>Swap</h4>
+          <h4>Pools</h4>
           <Popover
             content={settings}
-            title="Settings"
+            title="settings"
             trigger="click"
-            placement="bottomRight"
+            placement="bottomright"
           >
             <SettingOutlined className="cog" />
           </Popover>
@@ -211,40 +120,30 @@ function Swap(props) {
             disabled={!prices}
           />
           <Input placeholder="0" value={tokenTwoAmount} disabled={true} />
-          <div className="switchButton" onClick={switchTokens}>
-            <ArrowDownOutlined className="switchArrow" />
+          <div className="plusSign">
+            <PlusOutlined />
           </div>
           <div className="assetOne" onClick={() => openModal(1)}>
             <img src={tokenOne.img} alt="assetOneLogo" className="assetLogo" />
             {tokenOne.ticker}
-            <DownOutlined />
+            <DownOutlined></DownOutlined>
           </div>
           <div className="assetTwo" onClick={() => openModal(2)}>
-            <img src={tokenTwo.img} alt="assetTwoLogo" className="assetLogo" />
+            <img src={tokenTwo.img} alt="assetTwologo" className="assetLogo" />
             {tokenTwo.ticker}
-            <DownOutlined />
+            <DownOutlined></DownOutlined>
           </div>
         </div>
-        {requireApproval ? (
-          <div
-            className="swapButton"
-            style={{ backgroundColor: "#64dd17", color: "white" }}
-            onClick={approveToken}
-          >
-            Approve
-          </div>
-        ) : (
-          <div
-            className="swapButton"
-            onClick={fetchDexSwap}
-            disabled={!tokenOneAmount || !isConnected}
-          >
-            Swap
-          </div>
-        )}
+
+        <div className="inputs"></div>
+
+        <div className="poolsDetails">
+          "1 DAI = 0.756 WMATIC 1 WMATIC = 1.32 DAI Your pool shared:0.071862%
+          LP Tokens Received:0 LP Tokens"
+        </div>
+        <div className="swapButton">Insufficient WMATIC balance</div>
       </div>
     </>
   );
 }
-
-export default Swap;
+export default Pools;
